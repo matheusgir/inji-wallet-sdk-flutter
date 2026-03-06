@@ -1,0 +1,25 @@
+name: inji_flutter_sdk
+description: "Flutter SDK for MOSIP Inji - provides VCI, OpenID4VP, credential verification, secure keystore, OAuth2, and backend integration."
+version: 1.0.0
+homepage: https://github.com/nicvhine/inji_flutter_sdk
+
+environment:
+  sdk: ^3.10.4
+  flutter: '>=3.3.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  plugin_platform_interface: ^2.0.2
+  flutter_secure_storage: ^9.2.0
+  dio: ^5.4.0
+  app_links: ^6.3.0
+  json_annotation: ^4.9.0
+  crypto: ^3.0.3
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: io.mosip.inji_flutter_sdk
+        pluginClass: InjiFlutterSdkPlugin
