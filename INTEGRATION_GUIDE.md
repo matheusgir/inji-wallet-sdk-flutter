@@ -933,7 +933,4 @@ final webViewController = WebViewController()
 
 ---
 
-## Support
 
-For SDK support, contact the Inji SDK team or open an issue at:
-https://github.com/injibr/inji-wallet-sdk-flutter/issues
