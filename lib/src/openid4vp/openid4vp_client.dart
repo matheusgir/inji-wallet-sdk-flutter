@@ -72,4 +72,31 @@ class OpenId4VpClient {
     });
     return Map<String, dynamic>.from(result ?? {});
   }
+
+  /// Sends an error response to the verifier when the VP flow fails or
+  /// the user declines to share credentials.
+  ///
+  /// Parameters:
+  /// - [errorCode]: The error code, e.g. 'ACCESS_DENIED',
+  ///   'INVALID_TRANSACTION_DATA'.
+  /// - [errorMessage]: A human-readable description of the error.
+  /// - [source]: The source of the error (default: 'wallet').
+  ///
+  /// This is a fire-and-forget operation; errors during sending are silently
+  /// ignored so the app can still navigate away cleanly.
+  Future<void> sendErrorToVerifier(
+    String errorCode,
+    String errorMessage, {
+    String source = 'wallet',
+  }) async {
+    try {
+      await _channel.invokeMethod('sendErrorToVerifier', {
+        'errorCode': errorCode,
+        'errorMessage': errorMessage,
+        'source': source,
+      });
+    } catch (_) {
+      // Fire-and-forget: don't propagate errors from error reporting
+    }
+  }
 }

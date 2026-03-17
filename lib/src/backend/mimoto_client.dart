@@ -56,6 +56,45 @@ class MimotoClient {
     return Map<String, dynamic>.from(response.data as Map);
   }
 
+  /// Retrieves the list of trusted verifiers for OpenID4VP.
+  ///
+  /// Returns a list of verifier configurations containing clientId,
+  /// responseUris, and other trust parameters.
+  Future<List<Map<String, dynamic>>> getVerifiers() async {
+    try {
+      final response = await _dio.get('/v1/mimoto/verifiers');
+      final data = response.data;
+
+      // Handle nested response: {"response": {"verifiers": [...]}, "errors": []}
+      if (data is Map) {
+        final responseObj = data['response'];
+        if (responseObj is Map && responseObj.containsKey('verifiers')) {
+          final verifiers = responseObj['verifiers'] as List;
+          return verifiers
+              .map((e) => Map<String, dynamic>.from(e as Map))
+              .toList();
+        }
+        if (data.containsKey('verifiers')) {
+          final verifiers = data['verifiers'] as List;
+          return verifiers
+              .map((e) => Map<String, dynamic>.from(e as Map))
+              .toList();
+        }
+      }
+
+      if (data is List) {
+        return data
+            .map((e) => Map<String, dynamic>.from(e as Map))
+            .toList();
+      }
+
+      return [];
+    } catch (_) {
+      // Gracefully return empty list if the endpoint is unavailable
+      return [];
+    }
+  }
+
   /// Retrieves all application properties from the Mimoto backend.
   Future<Map<String, dynamic>> getAllProperties() async {
     final response = await _dio.get('/v1/mimoto/allProperties');
