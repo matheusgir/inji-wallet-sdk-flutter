@@ -40,12 +40,33 @@ class OpenId4VpClient {
   /// submission descriptor.
   Future<Map<String, dynamic>> constructUnsignedVPToken(
     Map<String, dynamic> credentials,
-    String holderId,
-  ) async {
+    String holderId, {
+    String nonce = '',
+    String clientId = '',
+    String responseUri = '',
+    String signatureSuite = 'JsonWebSignature2020',
+  }) async {
     final result =
         await _channel.invokeMethod<Map>('constructUnsignedVPToken', {
       'credentials': credentials,
       'holderId': holderId,
+      'nonce': nonce,
+      'clientId': clientId,
+      'responseUri': responseUri,
+      'signatureSuite': signatureSuite,
+    });
+    return Map<String, dynamic>.from(result ?? {});
+  }
+
+  Future<Map<String, dynamic>> sendVPResponseToVerifier({
+    required String jws,
+    required String signatureAlgorithm,
+    required List<String> formatTypes,
+  }) async {
+    final result = await _channel.invokeMethod<Map>('sendVPResponseToVerifier', {
+      'jws': jws,
+      'signatureAlgorithm': signatureAlgorithm,
+      'formatTypes': formatTypes,
     });
     return Map<String, dynamic>.from(result ?? {});
   }
@@ -63,12 +84,18 @@ class OpenId4VpClient {
   Future<Map<String, dynamic>> sharePresentation(
     String signedVpToken,
     Map<String, dynamic> presentationSubmission,
-    String responseUri,
-  ) async {
+    String responseUri, {
+    String? requestId,
+    String descriptorId = 'ECACredential',
+    String definitionId = 'eca-age-check',
+  }) async {
     final result = await _channel.invokeMethod<Map>('sharePresentation', {
       'signedVpToken': signedVpToken,
       'presentationSubmission': presentationSubmission,
       'responseUri': responseUri,
+      if (requestId != null) 'requestId': requestId,
+      'descriptorId': descriptorId,
+      'definitionId': definitionId,
     });
     return Map<String, dynamic>.from(result ?? {});
   }

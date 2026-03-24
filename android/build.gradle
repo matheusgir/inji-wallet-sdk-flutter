@@ -18,6 +18,9 @@ allprojects {
     repositories {
         google()
         mavenCentral()
+        maven { url = uri("https://jitpack.io") }
+        maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots/") }
+        maven { url = uri("https://repo.maven.apache.org/maven2/") }
     }
 }
 
@@ -44,12 +47,24 @@ android {
 
     packagingOptions {
         exclude "META-INF/versions/9/OSGI-INF/MANIFEST.MF"
+        exclude "META-INF/license.txt"
+        exclude "META-INF/LICENSE.txt"
+        exclude "META-INF/notice.txt"
+        exclude "META-INF/NOTICE.txt"
+        exclude "META-INF/DEPENDENCIES"
+        exclude "META-INF/*.SF"
+        exclude "META-INF/*.DSA"
+        exclude "META-INF/*.RSA"
     }
 
     configurations.all {
         exclude group: "org.bouncycastle", module: "bcprov-jdk15to18"
         exclude group: "org.bouncycastle", module: "bcutil-jdk15to18"
         exclude group: "org.bouncycastle", module: "bcpkix-jdk15to18"
+        exclude group: "info.weboftrust", module: "ld-signatures-java"
+        exclude group: "decentralized-identity", module: "jsonld-common-java"
+        exclude group: "com.google.crypto.tink", module: "tink"
+        exclude group: "io.mosip", module: "vcverifier-jar"
     }
 
     dependencies {
