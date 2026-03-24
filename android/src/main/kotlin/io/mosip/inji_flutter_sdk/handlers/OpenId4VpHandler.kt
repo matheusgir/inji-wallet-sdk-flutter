@@ -192,15 +192,18 @@ class OpenId4VpHandler : MethodChannel.MethodCallHandler {
                             val vpFinal = JSONObject(vpJson.toString())
                             vpFinal.put("proof", proofJson)
 
+                            val vcCount = vpJson.getJSONArray("verifiableCredential").length()
                             val submission = JSONObject().apply {
                                 put("id", UUID.randomUUID().toString())
                                 put("definition_id", definitionIdParam)
                                 put("descriptor_map", JSONArray().apply {
-                                    put(JSONObject().apply {
-                                        put("id", descriptorIdParam)
-                                        put("format", "ldp_vp")
-                                        put("path", "$")
-                                    })
+                                    for (i in 0 until vcCount) {
+                                        put(JSONObject().apply {
+                                            put("id", descriptorIdParam)
+                                            put("format", "ldp_vc")
+                                            put("path", "$.verifiableCredential[$i]")
+                                        })
+                                    }
                                 })
                             }
 
@@ -256,17 +259,25 @@ class OpenId4VpHandler : MethodChannel.MethodCallHandler {
                             val responseUri = authReq.responseUri
                                 ?: throw Exception("responseUri is null")
                             val stateParam = authReq.state ?: call.argument<String>("requestId") ?: ""
-                            val descriptorId = authReq.presentationDefinition?.inputDescriptors?.firstOrNull()?.id ?: "ECACredential"
+                            val descriptorId = call.argument<String>("descriptorId")
+                                ?: authReq.presentationDefinition?.inputDescriptors?.firstOrNull()?.id
+                                ?: ""
+                            val definitionId = call.argument<String>("definitionId")
+                                ?: authReq.presentationDefinition?.id
+                                ?: ""
+                            val inputDescriptors = authReq.presentationDefinition?.inputDescriptors ?: emptyList()
 
                             val submission = JSONObject().apply {
                                 put("id", UUID.randomUUID().toString())
-                                put("definition_id", authReq.presentationDefinition?.id ?: "eca-age-check")
+                                put("definition_id", definitionId)
                                 put("descriptor_map", JSONArray().apply {
-                                    put(JSONObject().apply {
-                                        put("id", descriptorId)
-                                        put("format", "ldp_vp")
-                                        put("path", "$")
-                                    })
+                                    inputDescriptors.forEachIndexed { i, desc ->
+                                        put(JSONObject().apply {
+                                            put("id", desc.id)
+                                            put("format", "ldp_vc")
+                                            put("path", "$.verifiableCredential[$i]")
+                                        })
+                                    }
                                 })
                             }
 

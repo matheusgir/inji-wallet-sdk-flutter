@@ -86,8 +86,8 @@ class OpenId4VpClient {
     Map<String, dynamic> presentationSubmission,
     String responseUri, {
     String? requestId,
-    String descriptorId = 'ECACredential',
-    String definitionId = 'eca-age-check',
+    required String descriptorId,
+    required String definitionId,
   }) async {
     final result = await _channel.invokeMethod<Map>('sharePresentation', {
       'signedVpToken': signedVpToken,
